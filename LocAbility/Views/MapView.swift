@@ -46,7 +46,8 @@ struct MapView: View {
         .mapStyle(.standard(elevation: .flat))
         .sheet(item: $selectedSpot) { spot in
             SpotDetailView(spot: spot)
-                .presentationDetents([.medium])
+                .presentationDetents([.medium,.large])
+                .presentationDragIndicator(.visible)
         }
     }
 }

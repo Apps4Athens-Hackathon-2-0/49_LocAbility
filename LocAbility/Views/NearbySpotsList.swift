@@ -12,7 +12,6 @@ struct NearbySpotsList: View {
     @EnvironmentObject var spotsManager: AccessibilitySpotsManager
     @EnvironmentObject var locationManager: LocationManager
     @State private var selectedSpot: AccessibilitySpot?
-    @State private var showSpotDetail = false
 
     var nearbySpots: [AccessibilitySpot] {
         spotsManager.getSpotsNear(
@@ -66,7 +65,6 @@ struct NearbySpotsList: View {
                     ForEach(nearbySpots) { spot in
                         Button {
                             selectedSpot = spot
-                            showSpotDetail = true
                         } label: {
                             SpotRowView(spot: spot)
                         }
@@ -77,10 +75,10 @@ struct NearbySpotsList: View {
                 .accessibilityLabel("List of \(nearbySpots.count) nearby accessibility spots")
             }
         }
-        .sheet(isPresented: $showSpotDetail) {
-            if let spot = selectedSpot {
-                SpotDetailView(spot: spot)
-            }
+        .sheet(item: $selectedSpot) { spot in
+            SpotDetailView(spot: spot)
+                .presentationDetents([.medium,.large])
+                .presentationDragIndicator(.visible)
         }
     }
 }
