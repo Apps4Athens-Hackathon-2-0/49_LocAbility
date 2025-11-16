@@ -27,14 +27,9 @@ struct LocationSearchView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     if isFetching {
-                        VStack(spacing: 16) {
-                            ProgressView()
-                            Text("Searching...")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 60)
+                        LoadingIndicator(text: "Searching nearby places…", size: 60)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 60)
                     } else if !searchResults.isEmpty {
                         ForEach(searchResults, id: \.self) { item in
                             Button {

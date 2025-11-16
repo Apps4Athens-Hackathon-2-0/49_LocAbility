@@ -43,6 +43,12 @@ struct NearbySpotsList: View {
             .padding(.horizontal, 20)
             .padding(.top, 4)
 
+            if spotsManager.isLoadingSpots {
+                LoadingIndicator(text: "Refreshing nearby accessibility data…", size: 48)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+            }
+
             if nearbySpots.isEmpty {
                 VStack(spacing: 8) {
                     Image(systemName: "location.slash.fill")
@@ -77,7 +83,7 @@ struct NearbySpotsList: View {
         }
         .sheet(item: $selectedSpot) { spot in
             SpotDetailView(spot: spot)
-                .presentationDetents([.medium,.large])
+                .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
         }
     }

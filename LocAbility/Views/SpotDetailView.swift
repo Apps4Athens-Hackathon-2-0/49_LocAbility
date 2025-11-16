@@ -108,11 +108,12 @@ struct SpotDetailView: View {
                 }
 
                 if isLoadingStreetView {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(hasMedia ? .white : .gray)
-                        .scaleEffect(1.2)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    LoadingIndicator(
+                        text: hasMedia ? "Refreshing view…" : "Fetching a street preview…",
+                        size: 48,
+                        textColor: hasMedia ? .white.opacity(0.9) : .secondary
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
             .clipShape(headerShape)

@@ -13,6 +13,7 @@ import SwiftUI
 @MainActor
 class AccessibilitySpotsManager: ObservableObject {
     @Published var spots: [AccessibilitySpot] = []
+    @Published var isLoadingSpots = false
     private let osmService = OpenStreetMapService()
 
     init() {
@@ -23,6 +24,10 @@ class AccessibilitySpotsManager: ObservableObject {
 
     /// Fetch accessibility features from OpenStreetMap
     func fetchFromOpenStreetMap(around coordinate: CLLocationCoordinate2D) async {
+        guard !isLoadingSpots else { return }
+        isLoadingSpots = true
+        defer { isLoadingSpots = false }
+
         await osmService.fetchAccessibilityFeatures(around: coordinate, radius: 1000)
 
         // Merge OSM data with existing spots (avoid duplicates)

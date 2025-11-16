@@ -24,6 +24,7 @@
 		A1000050 /* OpenStreetMapService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000051 /* OpenStreetMapService.swift */; };
 		A1000052 /* CoreMLClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000053 /* CoreMLClassifier.swift */; };
 		A1000054 /* LocationSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000055 /* LocationSearchView.swift */; };
+		A1000056 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000057 /* LoadingIndicator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		A1000051 /* OpenStreetMapService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenStreetMapService.swift; sourceTree = "<group>"; };
 		A1000053 /* CoreMLClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMLClassifier.swift; sourceTree = "<group>"; };
 		A1000055 /* LocationSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchView.swift; sourceTree = "<group>"; };
+		A1000057 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 				A1000018 /* NeighborhoodScoreCard.swift */,
 				A1000020 /* AccessibilitySettingsButton.swift */,
 				A1000055 /* LocationSearchView.swift */,
+				A1000057 /* LoadingIndicator.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -217,6 +220,7 @@
 				A1000050 /* OpenStreetMapService.swift in Sources */,
 				A1000052 /* CoreMLClassifier.swift in Sources */,
 				A1000054 /* LocationSearchView.swift in Sources */,
+				A1000056 /* LoadingIndicator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

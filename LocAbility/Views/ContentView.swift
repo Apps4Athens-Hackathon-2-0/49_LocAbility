@@ -150,6 +150,22 @@ struct ContentView: View {
                 .fullScreenCover(isPresented: $showingLocationSearch) {
                     LocationSearchView(isPresented: $showingLocationSearch)
                 }
+                .overlay(alignment: .top) {
+                    if spotsManager.isLoadingSpots {
+                        LoadingIndicator(
+                            text: "Updating accessibility data…",
+                            size: 42,
+                            textColor: .white.opacity(0.9)
+                        )
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 18)
+                        .background(.ultraThinMaterial, in: Capsule())
+                        .padding(.top, geometry.safeAreaInsets.top + 12)
+                        .shadow(color: .black.opacity(0.2), radius: 10, y: 4)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                }
+                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: spotsManager.isLoadingSpots)
                 .onAppear {
                     updateNeighborhoodScore()
                 }
