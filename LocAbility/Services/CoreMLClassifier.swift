@@ -3,12 +3,14 @@
 //  LocAbility
 //
 //  Petros Dhespollari @Copyright 2025
-//  Core ML helper for on-device classification
+//  Core ML + Vision Framework for accessibility classification
 //
 
 import Foundation
 import CoreML
 import NaturalLanguage
+import Vision
+import UIKit
 
 class CoreMLClassifier {
 
@@ -93,5 +95,146 @@ class CoreMLClassifier {
 
         print("📚 Custom model training would happen here")
         print("   Training data size: \(trainingData.count)")
+    }
+
+    // MARK: - Vision Framework Detection
+
+    /// Enhanced classification combining image and text analysis
+    static func classifyAccessibilityFeature(image: UIImage, description: String?) async throws -> (type: SpotType, confidence: Float, detectedFeatures: [String]) {
+        guard let ciImage = CIImage(image: image) else {
+            throw NSError(domain: "CoreMLClassifier", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid image"])
+        }
+
+        var detectedFeatures: [String] = []
+        var suggestedType: SpotType?
+        var confidence: Float = 0.0
+
+        // 1. Detect rectangles (doors, signs, ramps)
+        let rectangles = try await detectRectangles(in: ciImage)
+        if !rectangles.isEmpty {
+            detectedFeatures.append("\(rectangles.count) rectangular structures")
+            print("📐 Detected \(rectangles.count) rectangles")
+        }
+
+        // 2. Recognize text (accessibility signs)
+        let texts = try await recognizeText(in: ciImage)
+        if !texts.isEmpty {
+            detectedFeatures.append(contentsOf: texts)
+            print("📝 Recognized: \(texts.joined(separator: ", "))")
+
+            if let type = analyzeTextForAccessibility(texts) {
+                suggestedType = type
+                confidence = 0.85
+            }
+        }
+
+        // 3. Analyze description if provided
+        if let desc = description, !desc.isEmpty {
+            if let textType = classifyFromDescription(desc) {
+                if suggestedType == nil || confidence < 0.8 {
+                    suggestedType = textType
+                    confidence = 0.8
+                }
+            }
+        }
+
+        // 4. Scene classification
+        let scene = try await classifyScene(in: ciImage)
+        if let sceneLabel = scene {
+            detectedFeatures.append("Scene: \(sceneLabel)")
+            print("🏙️ Scene: \(sceneLabel)")
+        }
+
+        // Return result with fallback to ramp
+        let finalType = suggestedType ?? .ramp
+        let finalConfidence = confidence > 0 ? confidence : 0.4
+
+        return (finalType, finalConfidence, detectedFeatures)
+    }
+
+    private static func detectRectangles(in image: CIImage) async throws -> [VNRectangleObservation] {
+        let request = VNDetectRectanglesRequest()
+        request.minimumAspectRatio = 0.3
+        request.maximumAspectRatio = 2.0
+        request.minimumSize = 0.1
+        request.minimumConfidence = 0.6
+
+        let handler = VNImageRequestHandler(ciImage: image, options: [:])
+        try handler.perform([request])
+
+        return request.results as? [VNRectangleObservation] ?? []
+    }
+
+    private static func recognizeText(in image: CIImage) async throws -> [String] {
+        let request = VNRecognizeTextRequest()
+        request.recognitionLevel = .accurate
+        request.usesLanguageCorrection = true
+
+        let handler = VNImageRequestHandler(ciImage: image, options: [:])
+        try handler.perform([request])
+
+        guard let observations = request.results else { return [] }
+
+        var recognizedTexts: [String] = []
+        for observation in observations {
+            guard let topCandidate = observation.topCandidates(1).first else { continue }
+            if topCandidate.confidence > 0.5 {
+                recognizedTexts.append(topCandidate.string.lowercased())
+            }
+        }
+
+        return recognizedTexts
+    }
+
+    private static func classifyScene(in image: CIImage) async throws -> String? {
+        let request = VNClassifyImageRequest()
+
+        let handler = VNImageRequestHandler(ciImage: image, options: [:])
+        try handler.perform([request])
+
+        guard let results = request.results as? [VNClassificationObservation],
+              let topResult = results.first else {
+            return nil
+        }
+
+        if topResult.confidence > 0.6 {
+            return topResult.identifier
+        }
+
+        return nil
+    }
+
+    private static func analyzeTextForAccessibility(_ texts: [String]) -> SpotType? {
+        let combinedText = texts.joined(separator: " ")
+
+        let keywords: [SpotType: [String]] = [
+            .elevator: ["elevator", "lift", "↑", "↓", "floor", "level"],
+            .accessibleEntrance: ["entrance", "entry", "accessible", "wheelchair", "automatic", "door"],
+            .accessibleParking: ["parking", "park", "disabled", "handicap", "p", "reserved"],
+            .accessibleToilet: ["toilet", "wc", "restroom", "bathroom", "accessible"],
+            .ramp: ["ramp", "slope", "incline", "wheelchair access"],
+            .stepFreeRoute: ["step-free", "no steps", "level", "flat"]
+        ]
+
+        var bestMatch: SpotType?
+        var maxScore = 0
+
+        for (type, typeKeywords) in keywords {
+            let score = typeKeywords.filter { keyword in
+                combinedText.contains(keyword)
+            }.count
+
+            if score > maxScore {
+                maxScore = score
+                bestMatch = type
+            }
+        }
+
+        return maxScore > 0 ? bestMatch : nil
+    }
+
+    static func classifyFromDescription(_ description: String) -> SpotType? {
+        let (type, confidence) = classifyDescription(description)
+        return confidence > 0.3 ? type : nil
     }
 }

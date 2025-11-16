@@ -9,15 +9,23 @@
 import Foundation
 import CoreLocation
 import SwiftUI
+import FirebaseFirestore
 
 @MainActor
 class AccessibilitySpotsManager: ObservableObject {
     @Published var spots: [AccessibilitySpot] = []
     @Published var isLoadingSpots = false
     private let osmService = OpenStreetMapService()
+    private let firebaseService = FirebaseService()
+    private var firestoreListener: ListenerRegistration?
 
     init() {
         loadSampleData()
+        startRealtimeSync()
+    }
+
+    deinit {
+        firestoreListener?.remove()
     }
 
     // MARK: - OpenStreetMap Integration
@@ -51,8 +59,15 @@ class AccessibilitySpotsManager: ObservableObject {
         spots.append(spot)
         saveSpots()
 
-        // In production, sync with backend API
-        // uploadToServer(spot)
+        // Upload to Firebase for real-time sync
+        Task {
+            do {
+                try await firebaseService.uploadSpot(spot)
+                print("✅ Spot uploaded to Firebase: \(spot.title)")
+            } catch {
+                print("❌ Failed to upload spot: \(error)")
+            }
+        }
     }
 
     func removeSpot(_ spot: AccessibilitySpot) {
@@ -116,6 +131,47 @@ class AccessibilitySpotsManager: ObservableObject {
         if let data = UserDefaults.standard.data(forKey: "accessibility_spots"),
            let decoded = try? JSONDecoder().decode([AccessibilitySpot].self, from: data) {
             spots = decoded
+        }
+    }
+
+    // MARK: - Firebase Real-time Sync
+
+    /// Start listening for real-time spot updates from Firebase
+    private func startRealtimeSync() {
+        firestoreListener = firebaseService.listenForSpotUpdates { [weak self] firebaseSpots in
+            guard let self = self else { return }
+
+            // Merge Firebase spots with local spots (avoid duplicates)
+            for firebaseSpot in firebaseSpots {
+                let exists = self.spots.contains { $0.id == firebaseSpot.id }
+                if !exists {
+                    self.spots.append(firebaseSpot)
+                    print("🔄 Added new spot from Firebase: \(firebaseSpot.title)")
+                }
+            }
+        }
+    }
+
+    /// Fetch all spots from Firebase once
+    func fetchFromFirebase() async {
+        guard !isLoadingSpots else { return }
+        isLoadingSpots = true
+        defer { isLoadingSpots = false }
+
+        do {
+            let firebaseSpots = try await firebaseService.fetchAllSpots()
+
+            // Merge with existing spots
+            for firebaseSpot in firebaseSpots {
+                let exists = spots.contains { $0.id == firebaseSpot.id }
+                if !exists {
+                    spots.append(firebaseSpot)
+                }
+            }
+
+            print("✅ Fetched \(firebaseSpots.count) spots from Firebase")
+        } catch {
+            print("❌ Failed to fetch from Firebase: \(error)")
         }
     }
 

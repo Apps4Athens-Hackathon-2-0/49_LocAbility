@@ -237,6 +237,26 @@ class AddSpotViewModel: NSObject, ObservableObject {
         isClassifying = true
         defer { isClassifying = false }
 
+        // Use CoreMLClassifier with Vision Framework for enhanced detection
+        do {
+            let result = try await CoreMLClassifier.classifyAccessibilityFeature(
+                image: image,
+                description: voiceTranscript.isEmpty ? nil : voiceTranscript
+            )
+
+            await MainActor.run {
+                classifiedType = result.type
+                print("🤖 Enhanced AI Classification:")
+                print("   Type: \(result.type.rawValue)")
+                print("   Confidence: \(result.confidence)")
+                print("   Features: \(result.detectedFeatures.joined(separator: ", "))")
+            }
+            return
+        } catch {
+            print("⚠️ Enhanced classification failed: \(error), falling back to basic detection")
+        }
+
+        // Fallback to basic vision detection
         guard let cgImage = image.cgImage else { return }
 
         // Use Vision framework to detect features

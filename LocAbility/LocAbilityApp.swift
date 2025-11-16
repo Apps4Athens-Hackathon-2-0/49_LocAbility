@@ -7,11 +7,18 @@
 //
 
 import SwiftUI
+import FirebaseCore
 
 @main
 struct LocAbilityApp: App {
     @StateObject private var locationManager = LocationManager()
     @StateObject private var spotsManager = AccessibilitySpotsManager()
+
+    init() {
+        // Initialize Firebase
+        FirebaseApp.configure()
+        print("🔥 Firebase initialized successfully")
+    }
 
     var body: some Scene {
         WindowGroup {
