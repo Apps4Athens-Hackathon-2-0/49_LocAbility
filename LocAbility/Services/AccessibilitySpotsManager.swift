@@ -138,7 +138,7 @@ class AccessibilitySpotsManager: ObservableObject {
 
     /// Start listening for real-time spot updates from Firebase
     private func startRealtimeSync() {
-        firestoreListener = firebaseService.listenForSpotUpdates { [weak self] firebaseSpots in
+        firestoreListener = firebaseService.listenForSpotUpdates { [weak self] (firebaseSpots: [AccessibilitySpot]) in
             guard let self = self else { return }
 
             // Merge Firebase spots with local spots (avoid duplicates)

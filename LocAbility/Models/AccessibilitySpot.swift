@@ -18,6 +18,7 @@ struct AccessibilitySpot: Identifiable, Codable, Hashable {
     var status: SpotStatus
     var coordinate: CLLocationCoordinate2D
     var photo: UIImage?
+    var photoURL: URL?
     var createdAt: Date
     var distance: Double?
 
@@ -37,6 +38,7 @@ struct AccessibilitySpot: Identifiable, Codable, Hashable {
          status: SpotStatus,
          coordinate: CLLocationCoordinate2D,
          photo: UIImage? = nil,
+         photoURL: URL? = nil,
          createdAt: Date = Date(),
          distance: Double? = nil) {
         self.id = id
@@ -46,6 +48,7 @@ struct AccessibilitySpot: Identifiable, Codable, Hashable {
         self.status = status
         self.coordinate = coordinate
         self.photo = photo
+        self.photoURL = photoURL
         self.createdAt = createdAt
         self.distance = distance
     }
@@ -75,7 +78,7 @@ struct AccessibilitySpot: Identifiable, Codable, Hashable {
 
     // Codable conformance
     enum CodingKeys: String, CodingKey {
-        case id, title, description, type, status, latitude, longitude, createdAt
+        case id, title, description, type, status, latitude, longitude, photoURL, createdAt
     }
 
     init(from decoder: Decoder) throws {
@@ -88,6 +91,7 @@ struct AccessibilitySpot: Identifiable, Codable, Hashable {
         let latitude = try container.decode(Double.self, forKey: .latitude)
         let longitude = try container.decode(Double.self, forKey: .longitude)
         coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        photoURL = try container.decodeIfPresent(URL.self, forKey: .photoURL)
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         photo = nil
         distance = nil
@@ -102,6 +106,7 @@ struct AccessibilitySpot: Identifiable, Codable, Hashable {
         try container.encode(status, forKey: .status)
         try container.encode(coordinate.latitude, forKey: .latitude)
         try container.encode(coordinate.longitude, forKey: .longitude)
+        try container.encodeIfPresent(photoURL, forKey: .photoURL)
         try container.encode(createdAt, forKey: .createdAt)
     }
 

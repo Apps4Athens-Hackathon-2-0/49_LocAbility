@@ -10,6 +10,7 @@
 		2C36D7762EC9D2200094D214 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2C36D7752EC9D2200094D214 /* FirebaseCore */; };
 		2C36D7782EC9D2200094D214 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 2C36D7772EC9D2200094D214 /* FirebaseFirestore */; };
 		2C36D77A2EC9D2680094D214 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C36D7792EC9D2680094D214 /* GoogleService-Info.plist */; };
+		2C36D77C2ECA0BDC0094D214 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C36D77B2ECA0BDC0094D214 /* FirebaseService.swift */; };
 		A1000001 /* LocAbilityApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000002 /* LocAbilityApp.swift */; };
 		A1000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000004 /* ContentView.swift */; };
 		A1000005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000006 /* Assets.xcassets */; };
@@ -32,6 +33,7 @@
 
 /* Begin PBXFileReference section */
 		2C36D7792EC9D2680094D214 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2C36D77B2ECA0BDC0094D214 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
 		A1000002 /* LocAbilityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocAbilityApp.swift; sourceTree = "<group>"; };
 		A1000004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A1000006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 		A1000038 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2C36D77B2ECA0BDC0094D214 /* FirebaseService.swift */,
 				A1000026 /* LocationManager.swift */,
 				A1000028 /* AccessibilitySpotsManager.swift */,
 				A1000051 /* OpenStreetMapService.swift */,
@@ -219,6 +222,7 @@
 				A1000003 /* ContentView.swift in Sources */,
 				A1000007 /* MapView.swift in Sources */,
 				A1000009 /* FilterBar.swift in Sources */,
+				2C36D77C2ECA0BDC0094D214 /* FirebaseService.swift in Sources */,
 				A1000011 /* AddSpotView.swift in Sources */,
 				A1000013 /* SpotDetailView.swift in Sources */,
 				A1000015 /* NearbySpotsList.swift in Sources */,
